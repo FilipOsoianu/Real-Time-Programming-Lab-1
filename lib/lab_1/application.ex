@@ -1,4 +1,3 @@
-
 defmodule Lab1.Application do
   use Application
 
@@ -19,9 +18,9 @@ defmodule Lab1.Application do
         start: {FetchSSE, :start_link, ["http://localhost:4000/iot"]}
       },
       %{
-        id: Router,
-        start: {Router, :recv, [[]]}
-      },
+        id: Root,
+        start: {Root, :recv, [[]]}
+      }
     ]
 
     opts = [strategy: :one_for_one, name: __MODULE__]
