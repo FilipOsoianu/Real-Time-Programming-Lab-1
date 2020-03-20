@@ -31,4 +31,10 @@ defmodule DynSupervisor do
   def count_children do
     DynamicSupervisor.count_children(__MODULE__)
   end
+
+  def pid_children do
+    Enum.map(DynamicSupervisor.which_children(__MODULE__), fn x ->
+      Enum.at(Tuple.to_list(x), 1)
+    end)
+  end
 end

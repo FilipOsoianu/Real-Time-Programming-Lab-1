@@ -19,7 +19,7 @@ defmodule Lab1.Application do
       },
       %{
         id: Root,
-        start: {Root, :recv, []}
+        start: {Root, :recv, [[]]}
       }
     ]
 
