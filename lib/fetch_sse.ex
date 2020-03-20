@@ -1,7 +1,7 @@
 defmodule FetchSSE do
   def start_link(url) do
     {:ok, _pid} = EventsourceEx.new(url, stream_to: self())
-    router_pid = spawn_link(Root, :recv, [])
+    router_pid = spawn_link(Root, :recv, [[]])
     :ets.new(:buckets_registry, [:named_table])
     :ets.insert(:buckets_registry, {"router_pid", router_pid})
     recv()

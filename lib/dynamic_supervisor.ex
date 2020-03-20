@@ -20,8 +20,12 @@ defmodule DynSupervisor do
     DynamicSupervisor.start_child(__MODULE__, child_spec)
   end
 
-  def rm_slave(pid) do
+  def remove_worker(pid) do
     DynamicSupervisor.terminate_child(__MODULE__, pid)
+  end
+
+  def push_message_to_worker(pid, msg) do
+    GenServer.cast(pid, {:push, msg})
   end
 
   def count_children do
