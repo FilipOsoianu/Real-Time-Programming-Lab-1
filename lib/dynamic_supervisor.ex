@@ -14,7 +14,7 @@ defmodule DynSupervisor do
     child_spec = %{
       id: Worker,
       start: {Worker, :start_link, [msg]},
-      restart: :temporary
+      restart: :permanent
     }
 
     DynamicSupervisor.start_child(__MODULE__, child_spec)
@@ -24,12 +24,8 @@ defmodule DynSupervisor do
     DynamicSupervisor.terminate_child(__MODULE__, pid)
   end
 
-  def push_message_to_worker(pid, msg) do
-    GenServer.cast(pid, {:push, msg})
-  end
-
-  def pop_message_to_worker(pid) do
-    GenServer.call(pid, :pop)
+  def compune_and_send_forecast(pid, msg, aggregator_pid) do
+    GenServer.cast(pid, {:compute, msg, aggregator_pid})
   end
 
   def count_children do

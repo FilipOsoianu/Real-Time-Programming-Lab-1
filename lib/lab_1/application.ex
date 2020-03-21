@@ -22,8 +22,8 @@ defmodule Lab1.Application do
         start: {Aggregator, :start_link, []}
       },
       %{
-        id: Root,
-        start: {Root, :recv, []}
+        id: Router,
+        start: {Router, :recv, []}
       }
     ]
 

@@ -5,44 +5,18 @@ defmodule Worker do
     GenServer.start_link(__MODULE__, msg)
   end
 
-  # Callbacks 
   @impl true
   def init(msg) do
-    data = json_parse(msg)
-    data = calc_mean(data)
-    frc = forecast(data)
-    {:ok, frc}
-  end
-
-  # @impl true
-  # def handle_cast({:push, msg}, state) do
-  #   # IO.inspect("push")
-  #   data = json_parse(msg)
-  #   # data = calc_mean(data)
-  #   # frc = forecast(data)
-  #   IO.inspect(msg)
-  #   IO.puts("state")
-  #   IO.inspect(state)
-  #   {:noreply, [msg]}
-  # end
-
-  @impl true
-  def handle_call(:pop, _from, states) do
-    # Process.sleep(1000)
-    # IO.inspect((states))
-    [head | tail] = states
-    list = tail
-    IO.inspect(list)
-    {:reply, head, tail}
+    {:ok, self()}
   end
 
   @impl true
-  def handle_cast({:push, msg}, state) do
-    # IO.inspect(msg)
+  def handle_cast({:compute, msg, aggregator_pid}, states) do
     data = json_parse(msg)
     data = calc_mean(data)
     frc = forecast(data)
-    {:noreply, [frc | state]}
+    GenServer.cast(aggregator_pid, {:forecast, frc})
+    {:noreply, []}
   end
 
   def json_parse(msg) do
