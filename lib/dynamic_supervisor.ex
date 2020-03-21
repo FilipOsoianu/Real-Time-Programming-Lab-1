@@ -28,6 +28,10 @@ defmodule DynSupervisor do
     GenServer.cast(pid, {:push, msg})
   end
 
+  def pop_message_to_worker(pid) do
+    GenServer.call(pid, :pop)
+  end
+
   def count_children do
     DynamicSupervisor.count_children(__MODULE__)
   end

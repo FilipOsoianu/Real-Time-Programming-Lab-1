@@ -10,17 +10,35 @@ defmodule Worker do
   def init(msg) do
     # Logger.info("Starting #{inspect(name)}")
     # IO.inspect("start")
+    IO.puts("start")
+
     # IO.inspect(json_parse(msg))
     {:ok, self()}
   end
 
+  # @impl true
+  # def handle_cast({:push, msg}, state) do
+  #   # IO.inspect("push")
+  #   data = json_parse(msg)
+  #   # data = calc_mean(data)
+  #   # frc = forecast(data)
+  #   IO.inspect(msg)
+  #   IO.puts("state")
+  #   IO.inspect(state)
+  #   {:noreply, [msg]}
+  # end
+
+  @impl true
+  def handle_call(:pop, _from, [head | tail]) do
+    # Process.sleep(1000)
+    IO.inspect(head)
+
+    {:reply, head, tail}
+  end
+
   @impl true
   def handle_cast({:push, msg}, state) do
-    # IO.inspect("push")
-    data = json_parse(msg)
-    data = calc_mean(data)
-    frc = forecast(data)
-    # IO.inspect(frc)
+    # IO.inspect(msg)
     {:noreply, [msg | state]}
   end
 

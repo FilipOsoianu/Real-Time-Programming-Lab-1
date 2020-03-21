@@ -18,8 +18,12 @@ defmodule Lab1.Application do
         start: {FetchSSE, :start_link, ["http://localhost:4000/iot"]}
       },
       %{
+        id: Aggregator,
+        start: {Aggregator, :start_link, []}
+      },
+      %{
         id: Root,
-        start: {Root, :recv, [[]]}
+        start: {Root, :recv, []}
       }
     ]
 
