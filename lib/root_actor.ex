@@ -29,14 +29,12 @@ defmodule Root do
   # work with msg
   def msg_operations(msg, counter) do
     pids_list = DynSupervisor.pid_children()
-
     if DynSupervisor.count_children()[:active] < 10 do
       create_worker(msg)
       recv(counter)
     else
       if counter < length(pids_list) - 1 do
         counter = counter + 1
-
         # IO.inspect(  DynSupervisor.push_message_to_worker(Enum.at(pids_list, counter), msg))
 
         DynSupervisor.push_message_to_worker(Enum.at(pids_list, counter), msg)

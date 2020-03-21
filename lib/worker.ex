@@ -8,12 +8,10 @@ defmodule Worker do
   # Callbacks 
   @impl true
   def init(msg) do
-    # Logger.info("Starting #{inspect(name)}")
-    # IO.inspect("start")
-    IO.puts("start")
-
-    # IO.inspect(json_parse(msg))
-    {:ok, msg}
+    data = json_parse(msg)
+    data = calc_mean(data)
+    frc = forecast(data)
+    {:ok, frc}
   end
 
   # @impl true
@@ -29,10 +27,12 @@ defmodule Worker do
   # end
 
   @impl true
-  def handle_call(:pop, _from, [head | tail]) do
+  def handle_call(:pop, _from, states) do
     # Process.sleep(1000)
-    # IO.inspect(head)
-
+    # IO.inspect((states))
+    [head | tail] = states
+    list = tail
+    IO.inspect(list)
     {:reply, head, tail}
   end
 
