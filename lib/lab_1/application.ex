@@ -28,7 +28,7 @@ defmodule Lab1.Application do
       %{
         id: DataFlow,
         start: {DataFlow, :start_link, []}
-      },
+      }
     ]
 
     opts = [strategy: :one_for_one, name: __MODULE__]
