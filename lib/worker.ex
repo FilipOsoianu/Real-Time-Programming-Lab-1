@@ -1,5 +1,5 @@
 defmodule Worker do
-  use GenServer, restart: :permanent
+  use GenServer, restart: :temporary
 
   def start_link(msg) do
     GenServer.start_link(__MODULE__, msg)

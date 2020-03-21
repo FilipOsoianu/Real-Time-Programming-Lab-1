@@ -10,11 +10,11 @@ defmodule DynSupervisor do
     DynamicSupervisor.init(strategy: :one_for_one)
   end
 
-  def add_worker(msg) do
+  def create_worker(msg) do
     child_spec = %{
       id: Worker,
       start: {Worker, :start_link, [msg]},
-      restart: :permanent
+      restart: :temporary
     }
 
     DynamicSupervisor.start_child(__MODULE__, child_spec)

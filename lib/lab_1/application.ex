@@ -24,7 +24,11 @@ defmodule Lab1.Application do
       %{
         id: Router,
         start: {Router, :recv, []}
-      }
+      },
+      %{
+        id: DataFlow,
+        start: {DataFlow, :start_link, []}
+      },
     ]
 
     opts = [strategy: :one_for_one, name: __MODULE__]
