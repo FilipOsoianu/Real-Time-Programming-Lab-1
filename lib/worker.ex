@@ -13,7 +13,7 @@ defmodule Worker do
     IO.puts("start")
 
     # IO.inspect(json_parse(msg))
-    {:ok, self()}
+    {:ok, msg}
   end
 
   # @impl true
@@ -31,7 +31,7 @@ defmodule Worker do
   @impl true
   def handle_call(:pop, _from, [head | tail]) do
     # Process.sleep(1000)
-    IO.inspect(head)
+    # IO.inspect(head)
 
     {:reply, head, tail}
   end
@@ -39,7 +39,10 @@ defmodule Worker do
   @impl true
   def handle_cast({:push, msg}, state) do
     # IO.inspect(msg)
-    {:noreply, [msg | state]}
+    data = json_parse(msg)
+    data = calc_mean(data)
+    frc = forecast(data)
+    {:noreply, [frc | state]}
   end
 
   def json_parse(msg) do
