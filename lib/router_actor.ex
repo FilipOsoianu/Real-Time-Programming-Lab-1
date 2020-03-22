@@ -13,24 +13,15 @@ defmodule Router do
   @impl true
   def handle_cast({:router, msg, aggregator_pid, data_flow_pid}, states) do
     recommend_max_workers = GenServer.call(data_flow_pid, :recommend_max_workers)
-    IO.inspect(DynSupervisor.count_children()[:active])
     pids_list = DynSupervisor.pid_children()
-
-    if DynSupervisor.count_children()[:active] < 6 do
+    if DynSupervisor.count_children()[:active] < recommend_max_workers do
       create_worker(msg)
-      if length(pids_list) > 3 do
-        IO.inspect(pids_list)
-        DynSupervisor.remove_worker((pids_list[length(pids_list) - 1]))
+    else
+      if DynSupervisor.count_children()[:active] > recommend_max_workers do
+        [head | tail] = pids_list
+        DynSupervisor.remove_worker(head)
       end
     end
-
-    # if DynSupervisor.count_children()[:active] < recommend_max_workers do
-    #   create_worker(msg)
-    # else
-    #   if DynSupervisor.count_children()[:active] > recommend_max_workers do
-    #     # IO.inspect(pids_list[0])
-    #   end
-    # end
 
     #   if counter < length(pids_list) - 1 do
     #     counter = counter + 1
