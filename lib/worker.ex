@@ -15,7 +15,7 @@ defmodule Worker do
     data = json_parse(msg)
     data = calc_mean(data)
     frc = forecast(data)
-    GenServer.cast(aggregator_pid, {:forecast, frc})
+    GenServer.cast(aggregator_pid, {:forecast, frc, data})
     {:noreply, []}
   end
 
