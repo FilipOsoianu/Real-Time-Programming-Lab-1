@@ -7,21 +7,38 @@ defmodule DataFlow do
 
   @impl true
   def init(msg) do
-    {:ok, msg}
+    counter = 0
+    start_time = Time.utc_now()
+    current_flow = 3
+    state = [counter | start_time]
+    state = %{counter: counter, start_time: start_time, current_flow: current_flow}
+    {:ok, state}
   end
 
   @impl true
   def handle_call(:recommend_max_workers, _from, state) do
-    [head | tail] = state
-    {:reply, get_data_flow(head), tail}
+    {:reply, get_data_flow(state[:current_flow]), state}
   end
 
   @impl true
-  def handle_cast({:push, element}, state) do
-    queue_lenght = Process.info(self())[:message_queue_len]
+  def handle_cast(:send_flow, state) do
+    counter = state[:counter]
+    start_time = state[:start_time]
+    current_flow = state[:current_flow]
 
-    IO.inspect(queue_lenght)
-    {:noreply, [queue_lenght | state]}
+    time_now = Time.utc_now()
+    diff = Time.diff(time_now, start_time, :millisecond)
+
+    if diff > 1000 do
+      current_flow = counter
+      counter = 0
+      state = %{counter: counter, start_time: time_now, current_flow: current_flow}
+      {:noreply, state}
+    else
+      counter = counter + 1
+      state = %{counter: counter, start_time: start_time, current_flow: current_flow}
+      {:noreply, state}
+    end
   end
 
   def get_data_flow(head) do

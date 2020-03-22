@@ -1,13 +1,13 @@
 defmodule Worker do
-  use GenServer, restart: :temporary
-
+  use GenServer, restart: :transient
+  
   def start_link(msg) do
     GenServer.start_link(__MODULE__, msg)
   end
 
   @impl true
   def init(msg) do
-    {:ok, self()}
+    {:ok, msg}
   end
 
   @impl true
@@ -17,6 +17,10 @@ defmodule Worker do
     frc = forecast(data)
     GenServer.cast(aggregator_pid, {:forecast, frc})
     {:noreply, []}
+  end
+
+  def terminate(_reason, _state) do
+    IO.inspect("terminate")
   end
 
   def json_parse(msg) do

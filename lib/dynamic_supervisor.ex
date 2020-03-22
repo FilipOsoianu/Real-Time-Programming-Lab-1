@@ -7,6 +7,7 @@ defmodule DynSupervisor do
 
   @impl true
   def init(_init_arg) do
+    
     DynamicSupervisor.init(strategy: :one_for_one)
   end
 
@@ -14,7 +15,8 @@ defmodule DynSupervisor do
     child_spec = %{
       id: Worker,
       start: {Worker, :start_link, [msg]},
-      restart: :temporary
+      restart: :temporary,
+      shutdown: :brutal_kill
     }
 
     DynamicSupervisor.start_child(__MODULE__, child_spec)

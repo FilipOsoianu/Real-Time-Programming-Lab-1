@@ -1,40 +1,50 @@
 defmodule Router do
-  def start_link do
-    {:ok, aggregator_pid} = GenServer.start_link(Aggregator, [])
+  use GenServer, restart: :permanent
 
-    counter = 0
-    recv(counter, aggregator_pid)
+  def start_link(msg) do
+    GenServer.start_link(__MODULE__, msg)
   end
 
-  def recv(counter, aggregator_pid) do
-    receive do
-      {:data, msg} ->
-        msg_operations(msg, counter, aggregator_pid)
-
-      _ ->
-        IO.puts("No match!")
-    end
+  @impl true
+  def init(msg) do
+    {:ok, msg}
   end
 
-  def msg_operations(msg, counter, aggregator_pid) do
-    [{_id, data_flow_pid}] = :ets.lookup(:buckets_registry, "data_flow_pid")
-    IO.inspect(GenServer.call(data_flow_pid, :recommend_max_workers))
-    # GenServer.call(data_flow_pid, :recommend_max_workers)
+  @impl true
+  def handle_cast({:router, msg, aggregator_pid, data_flow_pid}, states) do
+    recommend_max_workers = GenServer.call(data_flow_pid, :recommend_max_workers)
+    IO.inspect(DynSupervisor.count_children()[:active])
     pids_list = DynSupervisor.pid_children()
 
-    if DynSupervisor.count_children()[:active] < 10 do
+    if DynSupervisor.count_children()[:active] < 6 do
       create_worker(msg)
+      if length(pids_list) > 3 do
+        IO.inspect(pids_list)
+        DynSupervisor.remove_worker((pids_list[length(pids_list) - 1]))
+      end
     end
 
-    if counter < length(pids_list) - 1 do
-      counter = counter + 1
-      compute_forecast(pids_list, counter, msg, aggregator_pid)
-      recv(counter, aggregator_pid)
-    else
-      counter = 0
-      compute_forecast(pids_list, counter, msg, aggregator_pid)
-      recv(counter, aggregator_pid)
-    end
+    # if DynSupervisor.count_children()[:active] < recommend_max_workers do
+    #   create_worker(msg)
+    # else
+    #   if DynSupervisor.count_children()[:active] > recommend_max_workers do
+    #     # IO.inspect(pids_list[0])
+    #   end
+    # end
+
+    #   if counter < length(pids_list) - 1 do
+    #     counter = counter + 1
+    #     compute_forecast(pids_list, counter, msg, aggregator_pid)
+    #     recv(counter, aggregator_pid)
+    #   else
+    #     counter = 0
+    # compute_forecast(pids_list, 1, msg, aggregator_pid)
+
+    #     recv(counter, aggregator_pid)
+    #   end
+    # end
+
+    {:noreply, []}
   end
 
   defp compute_forecast(pids_list, counter, msg, aggregator_pid) do
