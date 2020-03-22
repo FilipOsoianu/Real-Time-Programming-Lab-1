@@ -2,7 +2,7 @@ defmodule Aggregator do
   use GenServer, restart: :permanent
 
   def start_link(forecast) do
-    GenServer.start_link(__MODULE__, forecast)
+    GenServer.start_link(__MODULE__, forecast, name: __MODULE__)
   end
 
   @impl true
@@ -60,6 +60,7 @@ defmodule Aggregator do
         forecast: final_forecast,
         forecast_list: forcecast_list
       }
+
       IO.puts("<------------------------------->")
       IO.puts("Forecast")
       IO.inspect(state[:forecast])

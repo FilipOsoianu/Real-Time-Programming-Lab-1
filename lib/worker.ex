@@ -11,11 +11,11 @@ defmodule Worker do
   end
 
   @impl true
-  def handle_cast({:compute, msg, aggregator_pid}, states) do
+  def handle_cast({:compute, msg}, states) do
     data = json_parse(msg)
     data = calc_mean(data)
     frc = forecast(data)
-    GenServer.cast(aggregator_pid, {:forecast, frc, data})
+    GenServer.cast(Aggregator, {:forecast, frc, data})
     {:noreply, []}
   end
 

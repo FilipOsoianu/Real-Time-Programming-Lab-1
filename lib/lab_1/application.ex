@@ -3,6 +3,18 @@ defmodule Lab1.Application do
 
   def start(_type, _args) do
     children = [
+      %{
+        id: DataFlow,
+        start: {DataFlow, :start_link, [""]}
+      },
+      %{
+        id: Router,
+        start: {Router, :start_link, [""]}
+      },
+      %{
+        id: Aggregator,
+        start: {Aggregator, :start_link, [""]}
+      },
       {
         DynSupervisor,
         []
@@ -10,18 +22,6 @@ defmodule Lab1.Application do
       %{
         id: FetchSSE,
         start: {FetchSSE, :start_link, ["http://localhost:4000/iot"]}
-      },
-       %{
-        id: Aggregator,
-        start: {Aggregator, :start_link, []}
-      },
-       %{
-        id: DataFlow,
-        start: {DataFlow, :start_link, ["da"]}
-      },
-      %{
-        id: Router,
-        start: {Router, :start_link, []}
       }
     ]
 
