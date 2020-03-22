@@ -7,35 +7,34 @@ defmodule Router do
 
   @impl true
   def init(msg) do
-    {:ok, msg}
+    counter = 0
+    {:ok, counter}
   end
 
   @impl true
   def handle_cast({:router, msg, aggregator_pid, data_flow_pid}, states) do
+    counter = states
     recommend_max_workers = GenServer.call(data_flow_pid, :recommend_max_workers)
     pids_list = DynSupervisor.pid_children()
+
     if DynSupervisor.count_children()[:active] < recommend_max_workers do
       create_worker(msg)
     else
       if DynSupervisor.count_children()[:active] > recommend_max_workers do
         [head | tail] = pids_list
-        DynSupervisor.remove_worker(head)
+        remove_worker(head)
       end
     end
 
-    #   if counter < length(pids_list) - 1 do
-    #     counter = counter + 1
-    #     compute_forecast(pids_list, counter, msg, aggregator_pid)
-    #     recv(counter, aggregator_pid)
-    #   else
-    #     counter = 0
-    # compute_forecast(pids_list, 1, msg, aggregator_pid)
-
-    #     recv(counter, aggregator_pid)
-    #   end
-    # end
-
-    {:noreply, []}
+    if counter < length(pids_list) do
+      counter = counter + 1
+      compute_forecast(pids_list, counter, msg, aggregator_pid)
+      {:noreply, counter}
+    else
+      counter = 0
+      compute_forecast(pids_list, counter, msg, aggregator_pid)
+      {:noreply, counter}
+    end
   end
 
   defp compute_forecast(pids_list, counter, msg, aggregator_pid) do

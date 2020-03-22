@@ -12,7 +12,7 @@ defmodule Aggregator do
 
   @impl true
   def handle_cast({:forecast, forecast}, state) do
-    # IO.inspect(forecast)
+    IO.inspect(forecast)
     {:noreply, [forecast]}
   end
 end
