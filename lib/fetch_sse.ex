@@ -20,6 +20,7 @@ defmodule FetchSSE do
   end
 
   def msg_operations(msg) do
+    
     [{_id, router_pid}] = :ets.lookup(:buckets_registry, "router_pid")
     [{_id, data_flow_pid}] = :ets.lookup(:buckets_registry, "data_flow_pid")
     [{_id, aggregator_pid}] = :ets.lookup(:buckets_registry, "aggregator_pid")
