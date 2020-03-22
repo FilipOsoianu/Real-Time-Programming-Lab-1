@@ -23,6 +23,7 @@ defmodule FetchSSE do
     [{_id, router_pid}] = :ets.lookup(:buckets_registry, "router_pid")
     [{_id, data_flow_pid}] = :ets.lookup(:buckets_registry, "data_flow_pid")
     [{_id, aggregator_pid}] = :ets.lookup(:buckets_registry, "aggregator_pid")
+
     GenServer.cast(data_flow_pid, :send_flow)
     GenServer.cast(router_pid, {:router, msg, aggregator_pid, data_flow_pid})
     recv()

@@ -1,7 +1,6 @@
 defmodule Lab1.Application do
   use Application
 
-
   def start(_type, _args) do
     children = [
       {
@@ -11,7 +10,7 @@ defmodule Lab1.Application do
       %{
         id: FetchSSE,
         start: {FetchSSE, :start_link, ["http://localhost:4000/iot"]}
-      },
+      }
     ]
 
     opts = [strategy: :one_for_one, name: __MODULE__]

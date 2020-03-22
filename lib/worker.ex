@@ -114,6 +114,6 @@ defmodule Worker do
   end
 
   defp mean(a, b) do
-    a + b / 2
+    (a + b) / 2
   end
 end
