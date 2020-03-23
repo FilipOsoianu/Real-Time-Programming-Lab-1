@@ -19,6 +19,13 @@ defmodule Worker do
     {:noreply, []}
   end
 
+  @impl true
+  def terminate(_reason, _state) do
+    # IO.puts("Terminating #{state}")
+  #   Process.send_after(Scheduler, {:start_worker, state}, 10)
+    DynamicSupervisor.terminate_child(DynSupervisor, self())
+  end
+  
   def json_parse(msg) do
     msg_data = Jason.decode!(msg.data)
     msg_data["message"]
