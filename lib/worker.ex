@@ -21,8 +21,6 @@ defmodule Worker do
 
   @impl true
   def terminate(_reason, _state) do
-    # IO.puts("Terminating #{state}")
-  #   Process.send_after(Scheduler, {:start_worker, state}, 10)
     DynamicSupervisor.terminate_child(DynSupervisor, self())
   end
   
