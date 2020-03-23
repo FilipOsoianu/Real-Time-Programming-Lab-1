@@ -2,7 +2,9 @@ defmodule Aggregator do
   use GenServer, restart: :permanent
 
   def start_link(forecast) do
+    Process.sleep(1000)
     GenServer.start_link(__MODULE__, forecast, name: __MODULE__)
+
   end
 
   @impl true
@@ -44,6 +46,8 @@ defmodule Aggregator do
 
   @impl true
   def handle_cast({:forecast, forecast, current_senors_value}, state) do
+
+    update_frequency = String.to_integer(List.first(System.argv()))
     time_now = Time.utc_now()
     start_time = state[:time]
     diff = Time.diff(time_now, start_time, :millisecond)
@@ -51,8 +55,8 @@ defmodule Aggregator do
     final_sensor_value = state[:final_sensor_value]
     forecast_list = state[:forecast_list]
     final_forecast = state[:final_forecast]
-
-    if diff > 1000 do
+    
+    if diff > update_frequency do
 
       final_forecast = most_frequent(forecast_list)
       forcecast_list = []
