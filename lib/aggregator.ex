@@ -31,7 +31,6 @@ defmodule Aggregator do
 
   @impl true
   def handle_call(:get_forecast, _from, state) do
-    
     sensor_value_list = state[:sensor_value_list]
     forecast_list = state[:forecast_list]
     final_forecast = most_frequent(forecast_list)
@@ -39,8 +38,9 @@ defmodule Aggregator do
 
     response = %{
       final_forecast: final_forecast,
-      final_sensor_value: final_sensor_value,
+      final_sensor_value: final_sensor_value
     }
+
     state = %{
       time: Time.utc_now(),
       sensor_value_list: %{
@@ -89,25 +89,32 @@ defmodule Aggregator do
   end
 
   def get_average_value(map_of_list) do
-    avgList =
-      Enum.map(map_of_list, fn {key, val} ->
-        {key, [Enum.reduce(val, fn score, sum -> sum + score end) / Enum.count(val)]}
+    if length(map_of_list[:atmo_pressure_sensor]) > 1 do
+      avgList =
+        Enum.map(map_of_list, fn {key, val} ->
+          {key, [Enum.reduce(val, fn score, sum -> sum + score end) / Enum.count(val)]}
+        end)
+
+      map = Enum.into(avgList, %{})
+
+      Enum.reduce(map, map, fn {k, v}, acc ->
+        [head | _tail] = v
+        Map.put(acc, k, head)
       end)
-
-    map = Enum.into(avgList, %{})
-
-    Enum.reduce(map, map, fn {k, v}, acc ->
-      [head | _tail] = v
-      Map.put(acc, k, head)
-    end)
+    else
+      map_of_list
+    end
   end
 
   def most_frequent(list) do
-    map = Enum.frequencies(list)
-    map = Enum.sort(map, fn {_k, v}, {_k1, v1} -> v > v1 end)
-    tuple = Enum.at(map, 0)
-    list = Tuple.to_list(tuple)
-    List.first(list)
+    if length(list) > 1 do
+      map = Enum.frequencies(list)
+      map = Enum.sort(map, fn {_k, v}, {_k1, v1} -> v > v1 end)
+      tuple = Enum.at(map, 0)
+      list = Tuple.to_list(tuple)
+      List.first(list)
+    else
+      list
+    end
   end
-
 end

@@ -41,20 +41,12 @@ defmodule Input do
     else
       receive do
         [is_working | update_frequency] ->
-          if update_frequency < 200 do
-            IO.puts("Minimum update frequency is 200")
-            Process.sleep(2000)
-            get_forecast(start_time, 200, is_working)
-          else
             get_forecast(start_time, update_frequency, is_working)
-          end
       after
         10 -> get_forecast(start_time, update_frequency, is_working)
       end
     end
   end
-
- 
 
   def print(forecast) do
     IO.puts("<------------------------------->")
