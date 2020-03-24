@@ -2,7 +2,7 @@ defmodule Input do
   def start_link do
     time_now = Time.utc_now()
     update_frequency = 1000
-    input_pid = spawn_link(__MODULE__, :get_input, [time_now, update_frequency])
+    spawn_link(__MODULE__, :get_input, [time_now, update_frequency])
     forecast_pid = spawn_link(__MODULE__, :get_forecast, [time_now, update_frequency, true])
     :ets.new(:buckets_registry, [:named_table])
 

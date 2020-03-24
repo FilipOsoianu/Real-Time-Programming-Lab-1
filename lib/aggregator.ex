@@ -31,20 +31,27 @@ defmodule Aggregator do
 
   @impl true
   def handle_call(:get_forecast, _from, state) do
-    sensor_value_list = state[:sensor_value_list]
-    final_sensor_value = state[:final_sensor_value]
-    forecast_list = state[:forecast_list]
-    final_forecast = state[:final_forecast]
 
+    response = state
+    start_time = Time.utc_now()
+    final_forecast = "JUST_A_NORMAL_DAY"
+    forecast_list = []
+    
     state = %{
-      time: Time.utc_now(),
+      time: start_time,
+      sensor_value_list: %{
+        temperature_sensor: [],
+        humidity_sensor: [],
+        atmo_pressure_sensor: [],
+        wind_speed_sensor: [],
+        light_sensor: []
+      },
+      final_sensor_value: %{},
       forecast: final_forecast,
-      forecast_list: forecast_list,
-      final_sensor_value: final_sensor_value,
-      sensor_value_list: sensor_value_list
+      forecast_list: forecast_list
     }
 
-    {:reply, state, state}
+    {:reply, response, state}
   end
 
   @impl true
