@@ -4,7 +4,7 @@ services:
         image: alexburlacu/rtp-server
         container_name: SEE
         ports:  [4000:4000]
-    
+
     lab:
-        image: lab
+        build: .
         container_name: Forecast
