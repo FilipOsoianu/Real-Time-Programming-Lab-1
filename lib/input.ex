@@ -45,7 +45,14 @@ defmodule Input do
       get_forecast(time_now, update_frequency, is_working)
     else
       receive do
-        [is_working | update_frequency] -> get_forecast(start_time, update_frequency, is_working)
+        [is_working | update_frequency] ->
+          if update_frequency < 10 do
+            IO.puts("Minimum update frequency is 100")
+            Process.sleep(2000)
+            get_forecast(start_time, 10, is_working)
+          else
+            get_forecast(start_time, update_frequency, is_working)
+          end
       after
         10 -> get_forecast(start_time, update_frequency, is_working)
       end

@@ -11,7 +11,7 @@ defmodule Worker do
   end
 
   @impl true
-  def handle_cast({:compute, msg}, states) do
+  def handle_cast({:compute, msg}, _states) do
     data = json_parse(msg)
     data = calc_mean(data)
     frc = forecast(data)

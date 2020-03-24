@@ -6,7 +6,7 @@ defmodule Router do
   end
 
   @impl true
-  def init(msg) do
+  def init(_msg) do
     counter = 0
     {:ok, counter}
   end
@@ -21,7 +21,7 @@ defmodule Router do
       create_worker(msg)
     else
       if DynSupervisor.count_children()[:active] > recommend_max_workers do
-        [head | tail] = pids_list
+        [head | _tail] = pids_list
         remove_worker(head)
       end
     end

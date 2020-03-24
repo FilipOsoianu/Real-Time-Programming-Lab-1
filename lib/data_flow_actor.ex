@@ -6,11 +6,10 @@ defmodule DataFlow do
   end
 
   @impl true
-  def init(msg) do
+  def init(_msg) do
     counter = 0
     start_time = Time.utc_now()
     current_flow = 3
-    state = [counter | start_time]
     state = %{counter: counter, start_time: start_time, current_flow: current_flow}
     {:ok, state}
   end

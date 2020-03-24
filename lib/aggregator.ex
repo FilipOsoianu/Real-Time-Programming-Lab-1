@@ -31,12 +31,11 @@ defmodule Aggregator do
 
   @impl true
   def handle_call(:get_forecast, _from, state) do
-
     response = state
     start_time = Time.utc_now()
     final_forecast = "JUST_A_NORMAL_DAY"
     forecast_list = []
-    
+
     state = %{
       time: start_time,
       sensor_value_list: %{
