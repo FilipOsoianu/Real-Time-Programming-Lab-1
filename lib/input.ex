@@ -2,31 +2,39 @@ defmodule Input do
   def start_link do
     time_now = Time.utc_now()
     update_frequency = 1000
-    pid = spawn_link(__MODULE__, :get_input, [time_now, update_frequency])
-    {:ok, pid}
+    input_pid = spawn_link(__MODULE__, :get_input, [time_now, update_frequency])
+    forecast_pid = spawn_link(__MODULE__, :get_forecast, [time_now, update_frequency, true])
+    :ets.new(:buckets_registry, [:named_table])
+
+    :ets.insert(:buckets_registry, {"forecast_pid", forecast_pid})
+    {:ok, self()}
   end
 
   def get_input(start_time, update_frequency) do
+    [{_id, forecast_pid}] = :ets.lookup(:buckets_registry, "forecast_pid")
     user_input = IO.gets("")
+
     if user_input === "t\n" do
+      send(forecast_pid, [false | update_frequency])
+
       update_frequency =
         IO.gets("Introduce forcast update time: ")
         |> String.trim("\n")
         |> Integer.parse()
         |> elem(0)
 
-      get_forecast(start_time, update_frequency)
+      send(forecast_pid, [true | update_frequency])
+      get_input(start_time, update_frequency)
     else
-      get_forecast(start_time, update_frequency)
+      get_input(start_time, update_frequency)
     end
-
   end
 
-  def get_forecast(start_time, update_frequency) do
+  def get_forecast(start_time, update_frequency, is_working) do
     time_now = Time.utc_now()
     diff = Time.diff(time_now, start_time, :millisecond)
 
-    if diff > update_frequency do
+    if diff > update_frequency && is_working === true do
       received_forecast = GenServer.call(Aggregator, :get_forecast)
       forecast_list = received_forecast[:forecast_list]
       sensor_value_list = received_forecast[:sensor_value_list]
@@ -34,9 +42,13 @@ defmodule Input do
       final_forecast = most_frequent(forecast_list)
       final_sensor_value = get_average_value(sensor_value_list)
       print(final_forecast, final_sensor_value)
-      get_input(time_now, update_frequency)
+      get_forecast(time_now, update_frequency, is_working)
     else
-      get_input(start_time, update_frequency)
+      receive do
+        [is_working | update_frequency] -> get_forecast(start_time, update_frequency, is_working)
+      after
+        10 -> get_forecast(start_time, update_frequency, is_working)
+      end
     end
   end
 
