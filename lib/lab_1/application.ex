@@ -25,7 +25,7 @@ defmodule Lab1.Application do
       },
       %{
         id: FetchSSE,
-        start: {FetchSSE, :start_link, ["http://localhost:4000/iot"]}
+        start: {FetchSSE, :start_link, ["http://host.docker.internal:4000/iot"]}
       }
     ]
 

@@ -2,8 +2,9 @@ version: '3'
 services:
     sse_server:
         image: alexburlacu/rtp-server
-        container_name: amazing_boyd1
+        container_name: SEE
         ports:  [4000:4000]
-    elixir_lab:
-        build: 
-            context: .
+    
+    lab:
+        image: lab
+        container_name: Forecast
