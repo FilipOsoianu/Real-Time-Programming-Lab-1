@@ -1,11 +1,10 @@
 FROM elixir:1.10.2 as build
 
-ARG APP_NAME=elixir-lab
+ARG APP_NAME=lab_1
 
 ARG APP_VSN=0.1.0
 
 ARG SKIP_PHOENIX=false
-
 ARG MIX_ENV=prod
 
 RUN mix local.hex --force

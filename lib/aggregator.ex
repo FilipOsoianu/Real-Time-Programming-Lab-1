@@ -47,7 +47,6 @@ defmodule Aggregator do
   @impl true
   def handle_cast({:forecast, forecast, current_senors_value}, state) do
 
-    update_frequency = String.to_integer(List.first(System.argv()))
     time_now = Time.utc_now()
     start_time = state[:time]
     diff = Time.diff(time_now, start_time, :millisecond)
@@ -56,7 +55,7 @@ defmodule Aggregator do
     forecast_list = state[:forecast_list]
     final_forecast = state[:final_forecast]
     
-    if diff > update_frequency do
+    if diff > 1000 do
 
       final_forecast = most_frequent(forecast_list)
       forcecast_list = []
