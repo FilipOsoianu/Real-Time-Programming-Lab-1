@@ -23,7 +23,7 @@ defmodule Worker do
   def terminate(_reason, _state) do
     DynamicSupervisor.terminate_child(DynSupervisor, self())
   end
-  
+
   def json_parse(msg) do
     msg_data = Jason.decode!(msg.data)
     msg_data["message"]

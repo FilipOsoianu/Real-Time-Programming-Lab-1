@@ -20,6 +20,10 @@ defmodule Lab1.Application do
         []
       },
       %{
+        id: Input,
+        start: {Input, :start_link, []}
+      },
+      %{
         id: FetchSSE,
         start: {FetchSSE, :start_link, ["http://localhost:4000/iot"]}
       }
