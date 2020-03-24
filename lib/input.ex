@@ -35,21 +35,16 @@ defmodule Input do
     diff = Time.diff(time_now, start_time, :millisecond)
 
     if diff > update_frequency && is_working === true do
-      received_forecast = GenServer.call(Aggregator, :get_forecast)
-      forecast_list = received_forecast[:forecast_list]
-      sensor_value_list = received_forecast[:sensor_value_list]
-
-      final_forecast = most_frequent(forecast_list)
-      final_sensor_value = get_average_value(sensor_value_list)
-      print(final_forecast, final_sensor_value)
+      forecast = GenServer.call(Aggregator, :get_forecast)
+      print(forecast)
       get_forecast(time_now, update_frequency, is_working)
     else
       receive do
         [is_working | update_frequency] ->
-          if update_frequency < 10 do
-            IO.puts("Minimum update frequency is 100")
+          if update_frequency < 200 do
+            IO.puts("Minimum update frequency is 200")
             Process.sleep(2000)
-            get_forecast(start_time, 10, is_working)
+            get_forecast(start_time, 200, is_working)
           else
             get_forecast(start_time, update_frequency, is_working)
           end
@@ -59,42 +54,22 @@ defmodule Input do
     end
   end
 
-  def get_average_value(map_of_list) do
-    avgList =
-      Enum.map(map_of_list, fn {key, val} ->
-        {key, [Enum.reduce(val, fn score, sum -> sum + score end) / Enum.count(val)]}
-      end)
+ 
 
-    map = Enum.into(avgList, %{})
-
-    Enum.reduce(map, map, fn {k, v}, acc ->
-      [head | _tail] = v
-      Map.put(acc, k, head)
-    end)
-  end
-
-  def most_frequent(list) do
-    map = Enum.frequencies(list)
-    map = Enum.sort(map, fn {_k, v}, {_k1, v1} -> v > v1 end)
-    tuple = Enum.at(map, 0)
-    list = Tuple.to_list(tuple)
-    List.first(list)
-  end
-
-  def print(forecast, sensor_value) do
+  def print(forecast) do
     IO.puts("<------------------------------->")
     IO.puts("Forecast")
-    IO.inspect(forecast)
+    IO.inspect(forecast[:final_forecast])
     IO.puts("Atmosphere pressure ")
-    IO.inspect(sensor_value[:atmo_pressure_sensor])
+    IO.inspect(forecast[:final_sensor_value][:atmo_pressure_sensor])
     IO.puts("Humidity")
-    IO.inspect(sensor_value[:humidity_sensor])
+    IO.inspect(forecast[:final_sensor_value][:humidity_sensor])
     IO.puts("Light")
-    IO.inspect(sensor_value[:light_sensor])
+    IO.inspect(forecast[:final_sensor_value][:light_sensor])
     IO.puts("Temperature")
-    IO.inspect(sensor_value[:temperature_sensor])
+    IO.inspect(forecast[:final_sensor_value][:temperature_sensor])
     IO.puts("Wind speed")
-    IO.inspect(sensor_value[:wind_speed_sensor])
+    IO.inspect(forecast[:final_sensor_value][:wind_speed_sensor])
     IO.puts("<------------------------------->")
   end
 end
